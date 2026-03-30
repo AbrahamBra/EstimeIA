@@ -797,6 +797,65 @@
     .cta-tagline { margin-top: 1.75rem; font-size: 0.83rem; color: rgba(255,255,255,0.38); font-style: italic; }
 
     /* ============================================================
+       APPRENTISSAGE / FEEDBACK LOOP
+    ============================================================ */
+    #apprentissage {
+      background: var(--navy);
+      padding: 88px 0;
+    }
+    #apprentissage .label { color: rgba(255,255,255,0.45); }
+    .loop-header { text-align: center; max-width: 600px; margin: 0 auto 3.5rem; }
+    .loop-header h2 { color: var(--white); margin-bottom: 0.85rem; }
+    .loop-header .sub { color: rgba(255,255,255,0.58); margin-inline: auto; }
+    .loop-steps {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr auto 1fr;
+      gap: 1.25rem;
+      align-items: center;
+    }
+    .loop-step {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 14px;
+      padding: 1.65rem;
+    }
+    .loop-step-n {
+      font-family: var(--f-mono);
+      font-size: 0.72rem;
+      font-weight: 500;
+      color: var(--sage);
+      letter-spacing: 0.1em;
+      margin-bottom: 0.85rem;
+    }
+    .loop-step h3 { color: var(--white); font-size: 1.05rem; margin-bottom: 0.5rem; }
+    .loop-step p  { color: rgba(255,255,255,0.58); font-size: 0.87rem; line-height: 1.62; }
+    .loop-arrow {
+      font-size: 1.5rem;
+      color: var(--sage);
+      text-align: center;
+      opacity: 0.7;
+      padding: 0 0.25rem;
+      user-select: none;
+    }
+    .loop-callout {
+      margin-top: 2.5rem;
+      padding: 1.2rem 1.75rem;
+      background: rgba(var(--sage-rgb), 0.1);
+      border: 1px solid rgba(var(--sage-rgb), 0.22);
+      border-radius: 12px;
+      color: rgba(255,255,255,0.78);
+      font-size: 0.97rem;
+      line-height: 1.65;
+      text-align: center;
+    }
+    .loop-callout strong { color: var(--sage); }
+
+    @media (max-width: 900px) {
+      .loop-steps { grid-template-columns: 1fr; gap: 1rem; }
+      .loop-arrow { display: none; }
+    }
+
+    /* ============================================================
        FOOTER
     ============================================================ */
     footer {
@@ -885,7 +944,7 @@
         </h1>
 
         <p class="hero-sub">
-          Elle collecte le DVF, filtre les anomalies de prix, calcule une fourchette argumentée et génère un dossier PDF à votre charte. En 15&nbsp;minutes là où vous en passez 180. Plus vous l'utilisez, plus elle connaît votre marché.
+          Elle collecte DVF, filtre les anomalies et génère le dossier PDF en 15&nbsp;minutes. Et à chaque estimation que vous validez, elle enregistre votre logique. Après un mois, elle sait ce que vous savez de votre marché.
         </p>
 
         <div class="hero-ctas">
@@ -1043,6 +1102,43 @@
 </section>
 
 <!-- ============================================================
+     APPRENTISSAGE / FEEDBACK LOOP
+============================================================ -->
+<section id="apprentissage" aria-labelledby="loop-h2">
+  <div class="container">
+    <div class="loop-header reveal">
+      <span class="label">Ce qui nous rend différents</span>
+      <h2 id="loop-h2">Après 1&nbsp;mois,<br>elle estime comme vous.</h2>
+      <p class="sub">Les outils SaaS ont un modèle figé. Le nôtre apprend de vous. Chaque correction que vous faites devient de la mémoire.</p>
+    </div>
+
+    <div class="loop-steps">
+      <div class="loop-step reveal">
+        <div class="loop-step-n">01 — VOUS ESTIMEZ</div>
+        <h3>EstimeIA sort une fourchette</h3>
+        <p>Elle collecte DVF, calcule les comparables et propose un prix. Vous regardez — vous qui connaissez le secteur mieux que n'importe quelle base de données.</p>
+      </div>
+      <div class="loop-arrow reveal reveal-d1" aria-hidden="true">→</div>
+      <div class="loop-step reveal reveal-d1">
+        <div class="loop-step-n">02 — VOUS CORRIGEZ</div>
+        <h3>Vous ajustez en un clic</h3>
+        <p>"Le RDC décote ici de 8 %." "Cette rue est plus cotée que le DVF ne le dit." Vous corrigez. Ce n'est pas un bug — c'est ce que l'IA ne peut pas savoir sans vous.</p>
+      </div>
+      <div class="loop-arrow reveal reveal-d2" aria-hidden="true">→</div>
+      <div class="loop-step reveal reveal-d2">
+        <div class="loop-step-n">03 — ELLE MÉMORISE</div>
+        <h3>Votre logique devient la sienne</h3>
+        <p>EstimeIA enregistre votre raisonnement. À la prochaine estimation similaire, elle l'applique d'elle-même. Sans que vous ayez à le répéter.</p>
+      </div>
+    </div>
+
+    <div class="loop-callout reveal reveal-d3">
+      <strong>Résultat&nbsp;:</strong> au fil du temps, vous corrigez de moins en moins. L'outil a intégré votre expertise. Il connaît votre marché — parce que vous lui avez appris.
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
      COMMENT ÇA MARCHE
 ============================================================ -->
 <section id="fonctionnement" aria-labelledby="how-h2">
@@ -1072,7 +1168,7 @@
       <div class="step reveal reveal-d3">
         <div class="step-num" aria-hidden="true">04</div>
         <h3>Dossier PDF en 2 clics</h3>
-        <p>Vous validez. Le dossier est généré à votre image et prêt à envoyer au vendeur.</p>
+        <p>Vous validez (ou corrigez la fourchette). Le dossier est envoyé. Et chaque retour de votre part enrichit le modèle pour la prochaine fois.</p>
       </div>
     </div>
   </div>
