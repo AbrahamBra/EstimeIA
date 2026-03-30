@@ -764,6 +764,74 @@
     @media (max-width: 500px) { .form-row { grid-template-columns: 1fr; } }
 
     /* ============================================================
+       ROI
+    ============================================================ */
+    #roi { background: var(--ivory); }
+    .roi-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.35rem;
+      margin-top: 3rem;
+    }
+    .roi-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.75rem;
+      text-align: center;
+    }
+    .roi-card-accent {
+      background: var(--navy);
+      border-color: var(--navy);
+    }
+    .roi-n {
+      font-family: var(--f-mono);
+      font-size: clamp(1.75rem, 3.5vw, 2.35rem);
+      font-weight: 500;
+      color: var(--navy);
+      line-height: 1;
+      margin-bottom: 0.45rem;
+    }
+    .roi-card-accent .roi-n { color: var(--white); }
+    .roi-sublabel {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--sage);
+      margin-bottom: 0.85rem;
+    }
+    .roi-card-accent .roi-sublabel { color: rgba(255,255,255,0.65); }
+    .roi-card p { font-size: 0.87rem; color: var(--muted); line-height: 1.62; }
+    .roi-card-accent p { color: rgba(255,255,255,0.65); }
+
+    .double-peine {
+      margin-top: 2.5rem;
+      padding: 1.5rem 2rem;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--sage);
+      border-radius: 0 12px 12px 0;
+    }
+    .double-peine blockquote {
+      font-family: var(--f-serif);
+      font-size: 1.05rem;
+      font-style: italic;
+      color: var(--text);
+      line-height: 1.65;
+    }
+    .double-peine cite {
+      display: block;
+      margin-top: 0.65rem;
+      font-family: var(--f-sans);
+      font-size: 0.8rem;
+      color: var(--muted);
+      font-style: normal;
+    }
+
+    @media (max-width: 900px) { .roi-grid { grid-template-columns: 1fr; } }
+
+    /* ============================================================
        CTA FINAL
     ============================================================ */
     #cta-final {
@@ -965,8 +1033,8 @@
           <div class="stat-l">de temps gagné<br>par estimation</div>
         </div>
         <div class="stat">
-          <div class="stat-n"><span class="counter" data-target="60">0</span><sup>h</sup></div>
-          <div class="stat-l">libérées par mois<br>(20&nbsp;estim./mois)</div>
+          <div class="stat-n"><span class="counter" data-target="30">0</span><sup>h</sup></div>
+          <div class="stat-l">libérées par mois<br>(1h30 × 20&nbsp;estim.)</div>
         </div>
         <div class="stat">
           <div class="stat-n"><span class="counter" data-target="15">0</span><sup>&nbsp;min</sup></div>
@@ -993,7 +1061,7 @@
         <ul class="icon-list" role="list">
           <li>
             <span class="ic ic-red" aria-hidden="true">✕</span>
-            <span>20 estimations par mois = jusqu'à <strong>60&nbsp;heures perdues</strong> sur des tâches répétitives</span>
+            <span>20 estimations par mois = jusqu'à <strong>30&nbsp;heures perdues</strong> sur des tâches répétitives</span>
           </li>
           <li>
             <span class="ic ic-red" aria-hidden="true">✕</span>
@@ -1341,6 +1409,44 @@
           </div>
         </details>
       </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     ROI
+============================================================ -->
+<section id="roi" aria-labelledby="roi-h2">
+  <div class="container">
+    <div class="tc">
+      <span class="label reveal">Retour sur investissement</span>
+      <h2 id="roi-h2" class="reveal reveal-d1">Le calcul est simple.</h2>
+      <p class="sub reveal reveal-d2">Conçu pour les agences indépendantes de 2 à 15 agents. Pas un outil généraliste pour les grands réseaux.</p>
+    </div>
+
+    <div class="roi-grid">
+      <div class="roi-card reveal">
+        <div class="roi-n">30h</div>
+        <div class="roi-sublabel">récupérées par mois</div>
+        <p>1h30 × 20 estimations. Du temps réalloué à la prospection, aux mandats — ou simplement récupéré.</p>
+      </div>
+      <div class="roi-card reveal reveal-d1">
+        <div class="roi-n">≈ 3 000€</div>
+        <div class="roi-sublabel">de valeur récupérée / mois</div>
+        <p>Sur une base de 800€/jour dirigeant. Soit 10× l'abonnement EstimeIA dès le premier mois.</p>
+      </div>
+      <div class="roi-card roi-card-accent reveal reveal-d2">
+        <div class="roi-n">149–299€</div>
+        <div class="roi-sublabel">par mois, tout compris</div>
+        <p>Versus 1 000€/mois pour Hector ou IMO — qui ne résolvent pas ce problème.</p>
+      </div>
+    </div>
+
+    <div class="double-peine reveal reveal-d3">
+      <blockquote>
+        «&nbsp;Je paie 1 000€/mois pour des fonctions que je n'utilise pas. Et je continue à faire mes estimations à la main en parallèle.&nbsp;»
+        <cite>Ce que pensent la plupart des dirigeants avant EstimeIA.</cite>
+      </blockquote>
     </div>
   </div>
 </section>
