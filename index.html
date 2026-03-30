@@ -1,0 +1,1463 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EstimeIA — Estimations immobilières 80 % plus rapides grâce à l'IA</title>
+  <meta name="description" content="L'IA sur-mesure pour agents immobiliers : DVF automatisé, comparables filtrés, anomalies détectées, dossier PDF professionnel en 15 minutes.">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="EstimeIA — Estimations immobilières 80 % plus rapides">
+  <meta property="og:description" content="Automatisez vos estimations : DVF, comparables, anomalies, dossier PDF. De 3h à 15 min par estimation.">
+  <meta property="og:image" content="og-image.jpg">
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="EstimeIA — Estimations immobilières 80 % plus rapides">
+  <meta name="twitter:description" content="Automatisez vos estimations : DVF, comparables, anomalies, dossier PDF. De 3h à 15 min par estimation.">
+  <meta name="twitter:image" content="og-image.jpg">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <style>
+    /* ============================================================
+       RESET & BASE
+    ============================================================ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    img, svg { display: block; max-width: 100%; }
+
+    /* ============================================================
+       DESIGN TOKENS
+    ============================================================ */
+    :root {
+      /* Palette */
+      --ivory:     oklch(0.97 0.01 90);
+      --navy:      oklch(0.25 0.06 230);
+      --sage:      oklch(0.58 0.14 155);
+      --dark:      oklch(0.15 0.04 230);
+      --text:      oklch(0.20 0.03 240);
+      --muted:     oklch(0.52 0.02 240);
+      --border:    oklch(0.89 0.01 240);
+      --white:     #ffffff;
+
+      /* RGB for rgba() usage */
+      --navy-rgb:  26, 44, 80;
+      --sage-rgb:  55, 136, 90;
+      --ivory-rgb: 253, 250, 242;
+
+      /* Typography */
+      --f-serif: 'Playfair Display', Georgia, serif;
+      --f-sans:  'Inter', system-ui, sans-serif;
+      --f-mono:  'JetBrains Mono', 'Courier New', monospace;
+
+      /* Z-index layers */
+      --z-base:   0;
+      --z-card:   10;
+      --z-nav:    50;
+      --z-grain:  9998;
+    }
+
+    html { scroll-behavior: smooth; font-size: 16px; }
+
+    body {
+      font-family: var(--f-sans);
+      background-color: var(--ivory);
+      color: var(--text);
+      line-height: 1.65;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ============================================================
+       GRAIN OVERLAY
+    ============================================================ */
+    .grain {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: var(--z-grain);
+      opacity: 0.03;
+    }
+
+    /* ============================================================
+       TYPOGRAPHY
+    ============================================================ */
+    h1, h2, h3 { font-family: var(--f-serif); line-height: 1.2; }
+    h1 { font-size: clamp(2rem, 5vw, 3.2rem);   font-weight: 700; letter-spacing: -0.025em; }
+    h2 { font-size: clamp(1.6rem, 3.5vw, 2.35rem); font-weight: 700; letter-spacing: -0.015em; }
+    h3 { font-size: clamp(1rem, 2vw, 1.15rem); font-weight: 600; }
+    .mono { font-family: var(--f-mono); }
+
+    /* ============================================================
+       LAYOUT
+    ============================================================ */
+    .container { max-width: 1120px; margin: 0 auto; padding: 0 1.5rem; }
+    section { padding: 88px 0; }
+
+    /* ============================================================
+       SCROLL REVEAL
+    ============================================================ */
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal.visible          { opacity: 1; transform: translateY(0); }
+    .reveal-d1               { transition-delay: 0.12s; }
+    .reveal-d2               { transition-delay: 0.24s; }
+    .reveal-d3               { transition-delay: 0.36s; }
+    .reveal-d4               { transition-delay: 0.48s; }
+
+    @media (prefers-reduced-motion: reduce) {
+      .reveal { opacity: 1; transform: none; transition: none; }
+    }
+
+    /* ============================================================
+       NAV
+    ============================================================ */
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: var(--z-nav);
+      background: rgba(var(--ivory-rgb), 0.94);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+    .nav.scrolled {
+      border-bottom-color: var(--border);
+      box-shadow: 0 1px 20px rgba(var(--navy-rgb), 0.07);
+    }
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.05rem 1.5rem;
+      max-width: 1120px;
+      margin: 0 auto;
+    }
+    .nav-logo {
+      font-family: var(--f-serif);
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--navy);
+      text-decoration: none;
+      letter-spacing: -0.02em;
+    }
+    .nav-logo span { color: var(--sage); }
+    .nav-links { display: flex; align-items: center; gap: 2rem; list-style: none; }
+    .nav-links a {
+      font-size: 0.88rem;
+      font-weight: 500;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--navy); }
+    .nav-cta {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--white);
+      background: var(--navy);
+      padding: 0.6rem 1.2rem;
+      border-radius: 8px;
+      text-decoration: none;
+      min-height: 40px;
+      display: inline-flex;
+      align-items: center;
+      transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 2px 10px rgba(var(--navy-rgb), 0.25);
+    }
+    .nav-cta:hover { background: oklch(0.20 0.06 230); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(var(--navy-rgb), 0.35); }
+    .nav-cta:focus-visible, .nav-links a:focus-visible { outline: 2px solid var(--navy); outline-offset: 3px; border-radius: 4px; }
+
+    .nav-toggle {
+      display: none;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--navy);
+      padding: 0.5rem;
+      min-height: 48px;
+      min-width: 48px;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+    }
+    .nav-toggle:focus-visible { outline: 2px solid var(--navy); outline-offset: 2px; }
+
+    @media (max-width: 768px) {
+      .nav-toggle { display: flex; }
+      .nav-links {
+        display: none;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: var(--ivory);
+        border-bottom: 1px solid var(--border);
+        padding: 1rem 1.5rem 1.5rem;
+        box-shadow: 0 8px 24px rgba(var(--navy-rgb), 0.08);
+      }
+      .nav-links.open { display: flex; }
+      .nav-links li { border-bottom: 1px solid var(--border); }
+      .nav-links li:last-child { border-bottom: none; }
+      .nav-links a { display: block; padding: 0.85rem 0; font-size: 1rem; color: var(--text); }
+      .nav-links .nav-cta { margin-top: 0.75rem; justify-content: center; }
+    }
+
+    /* ============================================================
+       BUTTONS
+    ============================================================ */
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.875rem 1.75rem;
+      background: var(--navy);
+      color: var(--white);
+      font-family: var(--f-sans);
+      font-size: 1rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 10px;
+      text-decoration: none;
+      cursor: pointer;
+      min-height: 52px;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+      box-shadow: 0 3px 14px rgba(var(--navy-rgb), 0.28), 0 1px 4px rgba(var(--navy-rgb), 0.15);
+    }
+    .btn-primary::after {
+      content: '';
+      position: absolute;
+      top: 0; left: -100%;
+      width: 100%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.13), transparent);
+      animation: btn-shine 4s infinite;
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 24px rgba(var(--navy-rgb), 0.38), 0 2px 8px rgba(var(--navy-rgb), 0.2);
+      background: oklch(0.21 0.06 230);
+    }
+    .btn-primary:focus-visible { outline: 2px solid var(--navy); outline-offset: 3px; }
+
+    .btn-outline {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.875rem 1.75rem;
+      background: transparent;
+      color: var(--navy);
+      font-family: var(--f-sans);
+      font-size: 1rem;
+      font-weight: 600;
+      border: 1.5px solid var(--navy);
+      border-radius: 10px;
+      text-decoration: none;
+      cursor: pointer;
+      min-height: 52px;
+      transition: background 0.2s, transform 0.2s;
+    }
+    .btn-outline:hover { background: rgba(var(--navy-rgb), 0.05); transform: translateY(-1px); }
+    .btn-outline:focus-visible { outline: 2px solid var(--navy); outline-offset: 3px; }
+
+    @keyframes btn-shine {
+      0%       { left: -100%; }
+      50%, 100% { left: 100%; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .btn-primary::after { animation: none; }
+    }
+
+    /* ============================================================
+       SECTION CHROME
+    ============================================================ */
+    .label {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--sage);
+      margin-bottom: 0.85rem;
+    }
+    .tc { text-align: center; }
+    .tc .sub { margin-inline: auto; }
+    .sub {
+      font-size: 1.05rem;
+      color: var(--muted);
+      max-width: 560px;
+      line-height: 1.7;
+      margin-top: 0.75rem;
+    }
+    .sub.wide { max-width: 700px; }
+
+    /* ============================================================
+       HERO
+    ============================================================ */
+    #hero {
+      padding: 96px 0 80px;
+      position: relative;
+      overflow: hidden;
+    }
+    #hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 85% 65% at 78% 25%, rgba(var(--sage-rgb), 0.07) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 18% 75%, rgba(var(--navy-rgb), 0.04) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .hero-body {
+      position: relative;
+      z-index: 1;
+      max-width: 780px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(var(--sage-rgb), 0.09);
+      border: 1px solid rgba(var(--sage-rgb), 0.22);
+      color: oklch(0.42 0.14 155);
+      padding: 0.35rem 0.9rem;
+      border-radius: 100px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+    }
+    .hero-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--sage);
+      animation: dot-pulse 2.2s ease infinite;
+      flex-shrink: 0;
+    }
+    @keyframes dot-pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%       { opacity: 0.5; transform: scale(0.75); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .hero-dot { animation: none; }
+    }
+    .hero-h1 { margin-bottom: 1.25rem; }
+    .hero-h1 em { font-style: normal; color: var(--sage); }
+    .hero-sub {
+      font-size: clamp(1rem, 2vw, 1.125rem);
+      color: var(--muted);
+      max-width: 620px;
+      margin: 0 auto 2.25rem;
+      line-height: 1.7;
+    }
+    .hero-ctas {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: center;
+      align-items: center;
+    }
+    .hero-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+      margin-top: 3.5rem;
+      padding-top: 3rem;
+      border-top: 1px solid var(--border);
+    }
+    .stat { text-align: center; }
+    .stat-n {
+      font-family: var(--f-mono);
+      font-size: clamp(1.85rem, 4vw, 2.6rem);
+      font-weight: 500;
+      color: var(--navy);
+      line-height: 1;
+      margin-bottom: 0.45rem;
+    }
+    .stat-n sup { font-size: 0.55em; color: var(--sage); vertical-align: top; margin-top: 0.25em; }
+    .stat-l { font-size: 0.82rem; color: var(--muted); line-height: 1.45; }
+
+    @media (max-width: 640px) {
+      #hero { padding: 64px 0 56px; }
+      .hero-stats { grid-template-columns: 1fr 1fr; }
+      .hero-stats .stat:last-child { grid-column: 1 / -1; }
+      .hero-ctas { flex-direction: column; width: 100%; }
+      .btn-primary, .btn-outline { width: 100%; }
+    }
+
+    /* ============================================================
+       PROBLEM / SOLUTION
+    ============================================================ */
+    #probleme { background: var(--white); }
+    .ps-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3.5rem;
+      margin-top: 3rem;
+      align-items: start;
+    }
+    .ps-col-title {
+      font-family: var(--f-serif);
+      font-size: 1.35rem;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+    }
+    .ps-col-title.navy { color: var(--navy); }
+    .icon-list { list-style: none; display: flex; flex-direction: column; gap: 0.9rem; }
+    .icon-list li {
+      display: flex;
+      gap: 0.75rem;
+      align-items: flex-start;
+      font-size: 0.96rem;
+      line-height: 1.55;
+    }
+    .ic {
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+      font-size: 0.7rem;
+      font-weight: 700;
+    }
+    .ic-red  { background: rgba(220,53,69,0.1);       color: #c62a38; }
+    .ic-sage { background: rgba(var(--sage-rgb),0.12); color: oklch(0.42 0.14 155); }
+
+    @media (max-width: 768px) {
+      .ps-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+    }
+
+    /* ============================================================
+       COMPARISON TABLE
+    ============================================================ */
+    #comparaison { background: var(--ivory); }
+    .comp-wrap {
+      overflow-x: auto;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      box-shadow: 0 4px 28px rgba(var(--navy-rgb), 0.07);
+      margin-top: 3rem;
+    }
+    .comp-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.92rem;
+      min-width: 580px;
+    }
+    .comp-table thead th {
+      padding: 1.1rem 1.4rem;
+      text-align: left;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      color: var(--muted);
+      background: var(--white);
+      border-bottom: 1px solid var(--border);
+    }
+    .comp-table thead th.ours {
+      background: var(--navy);
+      color: var(--white);
+      text-align: center;
+    }
+    .comp-table tbody tr { border-bottom: 1px solid var(--border); }
+    .comp-table tbody tr:last-child { border-bottom: none; }
+    .comp-table tbody tr:hover td { background: oklch(0.975 0.008 90); }
+    .comp-table tbody td {
+      padding: 0.95rem 1.4rem;
+      background: var(--white);
+      transition: background 0.15s;
+    }
+    .comp-table tbody td:first-child { font-weight: 600; color: var(--navy); }
+    .comp-table tbody td.comp { color: var(--muted); text-align: center; }
+    .comp-table tbody td.ours {
+      background: oklch(0.22 0.06 230);
+      color: var(--white);
+      text-align: center;
+      font-weight: 500;
+    }
+    .comp-table tbody tr:hover td.ours { background: oklch(0.22 0.06 230); }
+    .ok { color: var(--sage); }
+    .no { color: #c62a38; }
+    .comp-quote {
+      margin-top: 2.5rem;
+      padding: 1.35rem 1.75rem;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--navy);
+      border-radius: 0 12px 12px 0;
+      font-family: var(--f-serif);
+      font-size: 1.08rem;
+      color: var(--navy);
+      font-style: italic;
+    }
+
+    /* ============================================================
+       HOW IT WORKS
+    ============================================================ */
+    #fonctionnement { background: var(--white); }
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 2rem;
+      margin-top: 3.5rem;
+      position: relative;
+    }
+    .steps::before {
+      content: '';
+      position: absolute;
+      top: 2rem;
+      left: calc(12.5% + 1rem);
+      right: calc(12.5% + 1rem);
+      height: 2px;
+      background: var(--border);
+    }
+    .step { text-align: center; position: relative; z-index: 1; }
+    .step-num {
+      width: 4rem; height: 4rem;
+      border-radius: 50%;
+      background: var(--navy);
+      color: var(--white);
+      font-family: var(--f-mono);
+      font-size: 1.05rem;
+      font-weight: 500;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 1.25rem;
+      box-shadow: 0 4px 18px rgba(var(--navy-rgb), 0.26);
+    }
+    .step h3 { margin-bottom: 0.55rem; }
+    .step p { font-size: 0.88rem; color: var(--muted); line-height: 1.6; }
+
+    @media (max-width: 900px) {
+      .steps { grid-template-columns: 1fr 1fr; }
+      .steps::before { display: none; }
+    }
+    @media (max-width: 520px) {
+      .steps { grid-template-columns: 1fr; }
+    }
+
+    /* ============================================================
+       BENEFITS
+    ============================================================ */
+    #benefices { background: var(--ivory); }
+    .benefits-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.35rem;
+      margin-top: 3rem;
+    }
+    .b-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.65rem;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+    .b-card::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 3px;
+      background: var(--sage);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.3s ease;
+    }
+    .b-card:hover { transform: translateY(-4px); box-shadow: 0 8px 32px rgba(var(--navy-rgb), 0.09); }
+    .b-card:hover::after { transform: scaleX(1); }
+    .b-icon {
+      width: 46px; height: 46px;
+      border-radius: 12px;
+      background: rgba(var(--sage-rgb), 0.1);
+      color: var(--sage);
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 1rem;
+    }
+    .b-card h3 { margin-bottom: 0.5rem; }
+    .b-card p { font-size: 0.88rem; color: var(--muted); line-height: 1.6; }
+
+    @media (max-width: 900px) { .benefits-grid { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 560px) { .benefits-grid { grid-template-columns: 1fr; } }
+
+    /* ============================================================
+       SOCIAL PROOF
+    ============================================================ */
+    #temoignages { background: var(--white); }
+    .proof-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin-top: 3rem;
+    }
+    .tcard {
+      background: var(--ivory);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2rem;
+    }
+    .tcard-quote {
+      font-family: var(--f-serif);
+      font-size: 1.05rem;
+      font-style: italic;
+      line-height: 1.65;
+      color: var(--text);
+      margin-bottom: 1.5rem;
+    }
+    .tcard-author { display: flex; gap: 0.75rem; align-items: center; }
+    .tcard-av {
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      background: var(--navy);
+      color: var(--white);
+      font-family: var(--f-serif);
+      font-size: 1.1rem;
+      font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .tcard-name { font-weight: 600; font-size: 0.92rem; }
+    .tcard-role { font-size: 0.8rem; color: var(--muted); margin-top: 1px; }
+    .tcard-placeholder {
+      background: transparent;
+      border: 2px dashed var(--border);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center;
+      gap: 1rem;
+    }
+    .tcard-placeholder p { font-size: 0.92rem; color: var(--muted); line-height: 1.6; }
+    .tcard-placeholder a {
+      color: var(--navy);
+      font-weight: 600;
+      font-size: 0.88rem;
+      text-decoration: none;
+    }
+    .tcard-placeholder a:hover { text-decoration: underline; }
+    .tcard-placeholder a:focus-visible { outline: 2px solid var(--navy); outline-offset: 2px; border-radius: 2px; }
+    .proof-badge {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background: rgba(var(--sage-rgb), 0.08);
+      border: 1px solid rgba(var(--sage-rgb), 0.2);
+      color: oklch(0.42 0.14 155);
+      padding: 0.5rem 1.1rem;
+      border-radius: 100px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      margin-top: 2.5rem;
+    }
+
+    @media (max-width: 768px) { .proof-grid { grid-template-columns: 1fr; } }
+
+    /* ============================================================
+       FAQ
+    ============================================================ */
+    #faq { background: var(--ivory); }
+    .faq-layout {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 4rem;
+      align-items: start;
+      margin-top: 2rem;
+    }
+    .faq-intro .sub { margin-top: 0.75rem; font-size: 0.93rem; }
+    .faq-list { display: flex; flex-direction: column; gap: 0.65rem; }
+    .faq-item {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      transition: box-shadow 0.2s;
+    }
+    .faq-item[open] { box-shadow: 0 4px 18px rgba(var(--navy-rgb), 0.07); }
+    .faq-q {
+      cursor: pointer;
+      padding: 1.1rem 1.4rem;
+      font-weight: 600;
+      font-size: 0.94rem;
+      list-style: none;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      color: var(--text);
+      transition: color 0.2s;
+      min-height: 52px;
+    }
+    .faq-item[open] .faq-q { color: var(--navy); }
+    .faq-q::-webkit-details-marker { display: none; }
+    .faq-q:focus-visible { outline: 2px solid var(--navy); outline-offset: -2px; border-radius: 12px; }
+    .faq-ic {
+      width: 24px; height: 24px;
+      border-radius: 50%;
+      border: 1.5px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      color: var(--muted);
+      font-size: 1rem;
+      transition: transform 0.3s ease, border-color 0.2s, color 0.2s;
+    }
+    .faq-item[open] .faq-ic { transform: rotate(45deg); border-color: var(--navy); color: var(--navy); }
+    .faq-a { padding: 0 1.4rem 1.1rem; font-size: 0.91rem; color: var(--muted); line-height: 1.68; }
+
+    @media (max-width: 768px) {
+      .faq-layout { grid-template-columns: 1fr; gap: 2rem; }
+    }
+
+    /* ============================================================
+       DEMO FORM
+    ============================================================ */
+    #demo { background: var(--white); }
+    .form-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: center;
+    }
+    .form-copy h2 { margin-bottom: 0.85rem; }
+    .form-copy > p { color: var(--muted); line-height: 1.7; margin-bottom: 1.5rem; }
+    .form-checks { list-style: none; display: flex; flex-direction: column; gap: 0.55rem; }
+    .form-checks li {
+      display: flex; align-items: center; gap: 0.5rem;
+      font-size: 0.9rem; color: var(--muted);
+    }
+    .form-checks li::before { content: '✓'; color: var(--sage); font-weight: 700; }
+    .c-form { display: flex; flex-direction: column; gap: 0.95rem; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.95rem; }
+    .fg { display: flex; flex-direction: column; gap: 0.35rem; }
+    .fg label { font-size: 0.83rem; font-weight: 600; color: var(--text); }
+    .fg input {
+      padding: 0.75rem 1rem;
+      border: 1.5px solid var(--border);
+      border-radius: 9px;
+      font-family: var(--f-sans);
+      font-size: 0.94rem;
+      color: var(--text);
+      background: var(--white);
+      transition: border-color 0.2s, box-shadow 0.2s;
+      min-height: 48px;
+    }
+    .fg input:focus { outline: none; border-color: var(--navy); box-shadow: 0 0 0 3px rgba(var(--navy-rgb), 0.08); }
+    .fg input::placeholder { color: var(--muted); }
+    .form-btn { width: 100%; margin-top: 0.25rem; }
+    .form-note { font-size: 0.77rem; color: var(--muted); text-align: center; }
+
+    @media (max-width: 900px) { .form-layout { grid-template-columns: 1fr; } }
+    @media (max-width: 500px) { .form-row { grid-template-columns: 1fr; } }
+
+    /* ============================================================
+       CTA FINAL
+    ============================================================ */
+    #cta-final {
+      background: var(--dark);
+      padding: 100px 0;
+      position: relative;
+      overflow: hidden;
+    }
+    #cta-final::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 80% 55% at 50% 0%, rgba(var(--sage-rgb), 0.08) 0%, transparent 65%);
+      pointer-events: none;
+    }
+    .cta-body {
+      position: relative; z-index: 1;
+      text-align: center;
+      max-width: 620px;
+      margin: 0 auto;
+    }
+    .cta-body h2 { color: var(--white); margin-bottom: 1rem; }
+    .cta-body p { color: rgba(255,255,255,0.6); font-size: 1.05rem; line-height: 1.7; margin-bottom: 2.5rem; }
+    .cta-body .btn-primary {
+      background: var(--sage);
+      box-shadow: 0 3px 14px rgba(var(--sage-rgb), 0.35);
+    }
+    .cta-body .btn-primary:hover {
+      background: oklch(0.52 0.14 155);
+      box-shadow: 0 6px 24px rgba(var(--sage-rgb), 0.45);
+    }
+    .cta-tagline { margin-top: 1.75rem; font-size: 0.83rem; color: rgba(255,255,255,0.38); font-style: italic; }
+
+    /* ============================================================
+       FOOTER
+    ============================================================ */
+    footer {
+      background: var(--dark);
+      border-top: 1px solid rgba(255,255,255,0.06);
+      padding: 3rem 0 2rem;
+    }
+    .footer-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 2rem;
+      margin-bottom: 2rem;
+    }
+    .footer-logo { font-family: var(--f-serif); font-size: 1.25rem; font-weight: 700; color: var(--white); letter-spacing: -0.02em; }
+    .footer-logo span { color: var(--sage); }
+    .footer-sub { font-size: 0.83rem; color: rgba(255,255,255,0.42); margin-top: 0.45rem; max-width: 260px; line-height: 1.55; }
+    .footer-links { display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem; }
+    .footer-links a { font-size: 0.83rem; color: rgba(255,255,255,0.5); text-decoration: none; transition: color 0.2s; }
+    .footer-links a:hover { color: var(--white); }
+    .footer-links a:focus-visible { outline: 2px solid var(--white); outline-offset: 2px; border-radius: 2px; }
+    .footer-bottom {
+      border-top: 1px solid rgba(255,255,255,0.07);
+      padding-top: 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .footer-copy { font-size: 0.78rem; color: rgba(255,255,255,0.32); }
+
+    @media (max-width: 640px) {
+      .footer-top { flex-direction: column; }
+      .footer-bottom { flex-direction: column; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Grain texture -->
+<svg class="grain" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+  <filter id="grain-f">
+    <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/>
+  </filter>
+  <rect width="100%" height="100%" filter="url(#grain-f)"/>
+</svg>
+
+<!-- ============================================================
+     NAV
+============================================================ -->
+<nav class="nav" role="navigation" aria-label="Navigation principale">
+  <div class="nav-inner">
+    <a href="#" class="nav-logo" aria-label="Retour à l'accueil">EstimeI<span>A</span></a>
+
+    <button class="nav-toggle" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="nav-menu">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+        <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+      </svg>
+    </button>
+
+    <ul class="nav-links" id="nav-menu" role="list">
+      <li><a href="#probleme">Le problème</a></li>
+      <li><a href="#fonctionnement">Comment ça marche</a></li>
+      <li><a href="#faq">FAQ</a></li>
+      <li><a href="#demo" class="nav-cta">Demander une démo</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- ============================================================
+     HERO
+============================================================ -->
+<section id="hero" aria-labelledby="hero-h1">
+  <div class="container">
+    <div class="hero-body">
+      <div class="reveal">
+        <div class="hero-badge">
+          <span class="hero-dot" aria-hidden="true"></span>
+          Déjà testé avec des agents du réseau GNI
+        </div>
+
+        <h1 class="hero-h1" id="hero-h1">
+          Gagnez jusqu'à <em>80&nbsp;%</em> de temps<br>
+          sur vos estimations immobilières
+        </h1>
+
+        <p class="hero-sub">
+          Elle collecte le DVF, filtre les anomalies de prix, calcule une fourchette argumentée et génère un dossier PDF à votre charte. En 15&nbsp;minutes là où vous en passez 180. Plus vous l'utilisez, plus elle connaît votre marché.
+        </p>
+
+        <div class="hero-ctas">
+          <a href="#demo" class="btn-primary">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            Demander une démo gratuite (15&nbsp;min)
+          </a>
+          <a href="#fonctionnement" class="btn-outline">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+            Voir comment ça marche
+          </a>
+        </div>
+      </div>
+
+      <div class="hero-stats reveal reveal-d2" aria-label="Résultats clés">
+        <div class="stat">
+          <div class="stat-n"><span class="counter" data-target="80">0</span><sup>%</sup></div>
+          <div class="stat-l">de temps gagné<br>par estimation</div>
+        </div>
+        <div class="stat">
+          <div class="stat-n"><span class="counter" data-target="60">0</span><sup>h</sup></div>
+          <div class="stat-l">libérées par mois<br>(20&nbsp;estim./mois)</div>
+        </div>
+        <div class="stat">
+          <div class="stat-n"><span class="counter" data-target="15">0</span><sup>&nbsp;min</sup></div>
+          <div class="stat-l">pour un dossier<br>complet et professionnel</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     PROBLÈME / SOLUTION
+============================================================ -->
+<section id="probleme" aria-labelledby="ps-h2">
+  <div class="container">
+    <div class="tc">
+      <span class="label reveal">Le problème</span>
+      <h2 id="ps-h2" class="reveal reveal-d1">Vous passez encore des heures<br>à estimer des biens&nbsp;?</h2>
+    </div>
+
+    <div class="ps-grid">
+      <div class="reveal">
+        <h3 class="ps-col-title">La réalité du terrain</h3>
+        <ul class="icon-list" role="list">
+          <li>
+            <span class="ic ic-red" aria-hidden="true">✕</span>
+            <span>20 estimations par mois = jusqu'à <strong>60&nbsp;heures perdues</strong> sur des tâches répétitives</span>
+          </li>
+          <li>
+            <span class="ic ic-red" aria-hidden="true">✕</span>
+            <span>Aller chercher manuellement sur DVF, impots.gouv, Google Maps… à chaque fois</span>
+          </li>
+          <li>
+            <span class="ic ic-red" aria-hidden="true">✕</span>
+            <span>Filtrer les anomalies (successions à bas prix, ventes « au pigeon »…) sans outil fiable</span>
+          </li>
+          <li>
+            <span class="ic ic-red" aria-hidden="true">✕</span>
+            <span>Produire un dossier clair et professionnel prend encore 10&nbsp;min à la main, par bien</span>
+          </li>
+          <li>
+            <span class="ic ic-red" aria-hidden="true">✕</span>
+            <span>Le vendeur attend et se stresse pendant que vous compilez des données</span>
+          </li>
+        </ul>
+      </div>
+
+      <div class="reveal reveal-d2">
+        <h3 class="ps-col-title navy">Ce qu'EstimeIA change</h3>
+        <p style="color:var(--muted);font-size:0.94rem;margin-bottom:1.1rem;line-height:1.65;">En une seule adresse, vous obtenez en quelques minutes&nbsp;:</p>
+        <ul class="icon-list" role="list">
+          <li>
+            <span class="ic ic-sage" aria-hidden="true">✓</span>
+            <span>Les <strong>comparables pertinents</strong> avec filtres intelligents (prix, étage, parking, standing…)</span>
+          </li>
+          <li>
+            <span class="ic ic-sage" aria-hidden="true">✓</span>
+            <span>Une <strong>fourchette de prix réaliste</strong>, anomalies automatiquement détectées et exclues</span>
+          </li>
+          <li>
+            <span class="ic ic-sage" aria-hidden="true">✓</span>
+            <span>L'<strong>enrichissement contexte</strong> : transports, écoles, projets d'aménagement…</span>
+          </li>
+          <li>
+            <span class="ic ic-sage" aria-hidden="true">✓</span>
+            <span>Un <strong>dossier PDF professionnel</strong> prêt à envoyer : votre charte, 6&nbsp;pages, épuré</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     COMPARAISON
+============================================================ -->
+<section id="comparaison" aria-labelledby="comp-h2">
+  <div class="container">
+    <div class="tc">
+      <span class="label reveal">Pourquoi EstimeIA</span>
+      <h2 id="comp-h2" class="reveal reveal-d1">Pas un estimateur de plus.<br>Un collaborateur qui apprend.</h2>
+      <p class="sub wide reveal reveal-d2">Les outils classiques sortent une moyenne statistique. EstimeIA part de votre façon de travailler et s'affine avec vos corrections.</p>
+    </div>
+
+    <div class="comp-wrap reveal reveal-d1">
+      <table class="comp-table" role="table" aria-label="Comparaison EstimeIA vs outils classiques">
+        <thead>
+          <tr>
+            <th scope="col">Critère</th>
+            <th scope="col" style="text-align:center;">PriceHubble, Meilleurs Agents, DVF brut…</th>
+            <th scope="col" class="ours">EstimeIA</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Précision locale</td>
+            <td class="comp">Statistiques générales</td>
+            <td class="ours">Apprend votre expertise terrain <span class="ok">✓</span></td>
+          </tr>
+          <tr>
+            <td>Filtrage des anomalies</td>
+            <td class="comp"><span class="no">✕</span> Aucun ou basique</td>
+            <td class="ours">Intelligent + fourchettes sur mesure <span class="ok">✓</span></td>
+          </tr>
+          <tr>
+            <td>Approche</td>
+            <td class="comp">Boîte noire générique</td>
+            <td class="ours">Sur-mesure + boucle de feedback <span class="ok">✓</span></td>
+          </tr>
+          <tr>
+            <td>Dossier client</td>
+            <td class="comp">Standard ou brut</td>
+            <td class="ours">Épuré, à votre image <span class="ok">✓</span></td>
+          </tr>
+          <tr>
+            <td>Gain de temps réel</td>
+            <td class="comp">Variable, souvent limité</td>
+            <td class="ours"><span class="mono">50 – 80 %</span> prouvé sur process complet <span class="ok">✓</span></td>
+          </tr>
+          <tr>
+            <td>Évolutivité</td>
+            <td class="comp">Fixe, pas d'apprentissage</td>
+            <td class="ours">S'améliore avec vos retours <span class="ok">✓</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <blockquote class="comp-quote reveal reveal-d2">
+      «&nbsp;Ce n'est pas une IA qui remplace l'agent. C'est une IA qui devient votre meilleur collaborateur.&nbsp;»
+    </blockquote>
+  </div>
+</section>
+
+<!-- ============================================================
+     COMMENT ÇA MARCHE
+============================================================ -->
+<section id="fonctionnement" aria-labelledby="how-h2">
+  <div class="container">
+    <div class="tc">
+      <span class="label reveal">Fonctionnement</span>
+      <h2 id="how-h2" class="reveal reveal-d1">De l'adresse au dossier<br>en 4 étapes</h2>
+      <p class="sub reveal reveal-d2">Aucune formation, aucun paramétrage. Vous rentrez l'adresse, l'IA fait le reste. Vous validez en 2&nbsp;clics.</p>
+    </div>
+
+    <div class="steps">
+      <div class="step reveal">
+        <div class="step-num" aria-hidden="true">01</div>
+        <h3>Saisie de l'adresse</h3>
+        <p>Entrez l'adresse du bien. C'est tout ce dont EstimeIA a besoin pour démarrer l'analyse.</p>
+      </div>
+      <div class="step reveal reveal-d1">
+        <div class="step-num" aria-hidden="true">02</div>
+        <h3>Collecte automatique</h3>
+        <p>L'IA récupère et filtre DVF, impots.gouv, rues adjacentes, transports, écoles, projets d'aménagement.</p>
+      </div>
+      <div class="step reveal reveal-d2">
+        <div class="step-num" aria-hidden="true">03</div>
+        <h3>Analyse &amp; scoring</h3>
+        <p>Elle applique vos règles métier, détecte les anomalies et propose une fourchette de prix argumentée.</p>
+      </div>
+      <div class="step reveal reveal-d3">
+        <div class="step-num" aria-hidden="true">04</div>
+        <h3>Dossier PDF en 2 clics</h3>
+        <p>Vous validez. Le dossier est généré à votre image et prêt à envoyer au vendeur.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     BÉNÉFICES CONCRETS
+============================================================ -->
+<section id="benefices" aria-labelledby="ben-h2">
+  <div class="container">
+    <div class="tc">
+      <span class="label reveal">Ce que ça change</span>
+      <h2 id="ben-h2" class="reveal reveal-d1">Ce que ça change,<br>dès la première semaine</h2>
+    </div>
+
+    <div class="benefits-grid">
+      <div class="b-card reveal">
+        <div class="b-icon" aria-hidden="true">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </div>
+        <h3>Jusqu'à 2 semaines libérées par mois</h3>
+        <p>50 à 80&nbsp;% de temps gagné par estimation. Sur 20&nbsp;biens par mois, ça fait deux semaines entières à faire ce que les données ne font pas à votre place.</p>
+      </div>
+
+      <div class="b-card reveal reveal-d1">
+        <div class="b-icon" aria-hidden="true">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        </div>
+        <h3>Votre vendeur n'attend plus</h3>
+        <p>Dossier complet en 10 à 15&nbsp;minutes. Le vendeur reçoit quelque chose de professionnel le jour même. Pas 48&nbsp;h plus tard, pas "je vous rappelle demain".</p>
+      </div>
+
+      <div class="b-card reveal reveal-d2">
+        <div class="b-icon" aria-hidden="true">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg>
+        </div>
+        <h3>Meilleur taux de transformation</h3>
+        <p>Des dossiers clairs et transparents renforcent la confiance. Plus de confiance = plus de mandats signés.</p>
+      </div>
+
+      <div class="b-card reveal">
+        <div class="b-icon" aria-hidden="true">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        </div>
+        <h3>Dossiers premium qui vous différencient</h3>
+        <p>6&nbsp;pages épurées à votre charte graphique, là où la concurrence envoie un tableau Excel ou un PDF brut de 25&nbsp;pages.</p>
+      </div>
+
+      <div class="b-card reveal reveal-d1">
+        <div class="b-icon" aria-hidden="true">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+        </div>
+        <h3>Une IA qui apprend votre terrain</h3>
+        <p>Les outils généralistes ignorent vos spécificités locales. EstimeIA les apprend : chaque correction que vous lui donnez l'affine un peu plus.</p>
+      </div>
+
+      <div class="b-card reveal reveal-d2">
+        <div class="b-icon" aria-hidden="true">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        </div>
+        <h3>Interconnecté à vos outils existants</h3>
+        <p>Hector, Modelo, votre CRM. EstimeIA se branche dessus sans rien changer à votre façon de travailler. Certains agents ont aussi réduit leurs abonnements SaaS redondants.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     TÉMOIGNAGES
+============================================================ -->
+<section id="temoignages" aria-labelledby="temo-h2">
+  <div class="container">
+    <div class="tc">
+      <span class="label reveal">Témoignages</span>
+      <h2 id="temo-h2" class="reveal reveal-d1">Ce qu'en disent<br>les agents</h2>
+    </div>
+
+    <div class="proof-grid">
+      <div class="tcard reveal">
+        <p class="tcard-quote">
+          «&nbsp;Je faisais DVF à la main depuis des années. Là, je rentre l'adresse, je valide la fourchette, j'envoie le dossier. Ça prend 12&nbsp;minutes. C'est difficile à expliquer aux collègues qui ne l'ont pas encore essayé.&nbsp;»
+        </p>
+        <div class="tcard-author">
+          <div class="tcard-av" aria-hidden="true">A</div>
+          <div>
+            <div class="tcard-name">Alexandre D.</div>
+            <div class="tcard-role">Agent immobilier — réseau GNI, Lyon</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tcard tcard-placeholder reveal reveal-d1">
+        <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="color:var(--muted)" aria-hidden="true">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+        </svg>
+        <p>Déploiement en cours auprès d'autres agences du réseau GNI.<br>Les prochains retours terrain arrivent ici.</p>
+        <a href="#demo">Faites partie des premiers →</a>
+      </div>
+    </div>
+
+    <div class="tc">
+      <span class="proof-badge reveal">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        En cours de déploiement chez des agences partenaires
+      </span>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     FAQ
+============================================================ -->
+<section id="faq" aria-labelledby="faq-h2">
+  <div class="container">
+    <div class="faq-layout">
+      <div class="faq-intro reveal">
+        <span class="label">Questions fréquentes</span>
+        <h2 id="faq-h2">Vos questions,<br>nos réponses.</h2>
+        <p class="sub">Tout ce que vous voulez savoir avant de réserver une démo.</p>
+      </div>
+
+      <div class="faq-list reveal reveal-d1">
+        <details class="faq-item">
+          <summary class="faq-q">
+            Est-ce que ça remplace totalement l'humain&nbsp;?
+            <span class="faq-ic" aria-hidden="true">+</span>
+          </summary>
+          <div class="faq-a">
+            Non. EstimeIA collecte, filtre, met en forme. Vous gardez la main sur la fourchette, sur le quartier, sur la relation client. L'outil gère le lourd, le jugement reste à vous. C'est la différence entre être augmenté et être remplacé.
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary class="faq-q">
+            Combien ça coûte&nbsp;?
+            <span class="faq-ic" aria-hidden="true">+</span>
+          </summary>
+          <div class="faq-a">
+            Sur-mesure selon votre volume. On part d'un accès API et d'un abonnement léger, on ajuste en fonction de ce que vous utilisez vraiment. Pas de grille tarifaire à prendre ou laisser. Demandez une démo et on chiffre ensemble.
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary class="faq-q">
+            Intégration avec Hector, Modelo ou mon CRM&nbsp;?
+            <span class="faq-ic" aria-hidden="true">+</span>
+          </summary>
+          <div class="faq-a">
+            Oui. Hector, Modelo, et la plupart des CRM immobiliers. Soit c'est déjà câblé, soit on le fait pendant la prise en main. L'idée c'est que vous ne changiez rien à votre façon de travailler.
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary class="faq-q">
+            Mes données sont-elles sécurisées&nbsp;?
+            <span class="faq-ic" aria-hidden="true">+</span>
+          </summary>
+          <div class="faq-a">
+            Oui. Déploiement chez vous (on-premise) ou cloud sécurisé, selon vos contraintes. RGPD respecté. Vos données clients ne servent jamais à entraîner des modèles tiers. Elles restent les vôtres.
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary class="faq-q">
+            Faut-il une formation longue pour l'utiliser&nbsp;?
+            <span class="faq-ic" aria-hidden="true">+</span>
+          </summary>
+          <div class="faq-a">
+            Non. Vous faites votre première estimation pendant la démo. La prise en main est incluse, et l'outil s'adapte à votre façon de travailler au fil du temps, pas l'inverse.
+          </div>
+        </details>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     FORMULAIRE DÉMO
+============================================================ -->
+<section id="demo" aria-labelledby="form-h2">
+  <div class="container">
+    <div class="form-layout">
+      <div class="form-copy reveal">
+        <span class="label">Réserver une démo</span>
+        <h2 id="form-h2">15&nbsp;minutes pour voir si c'est fait pour vous.</h2>
+        <p>Pas de pitch commercial. On prend un bien de votre portefeuille et on fait l'estimation en direct. Vous voyez exactement ce que ça donne sur votre marché.</p>
+        <ul class="form-checks">
+          <li>Gratuit, sans engagement</li>
+          <li>Résultat visible en moins de 10&nbsp;minutes</li>
+          <li>Adapté à votre ville et votre volume</li>
+          <li>Toutes vos questions répondues en direct</li>
+        </ul>
+      </div>
+
+      <form class="c-form reveal reveal-d1" id="demo-form" novalidate aria-label="Formulaire de demande de démo">
+        <div class="form-row">
+          <div class="fg">
+            <label for="prenom">Prénom</label>
+            <input type="text" id="prenom" name="prenom" placeholder="Jean" required autocomplete="given-name">
+          </div>
+          <div class="fg">
+            <label for="nom">Nom</label>
+            <input type="text" id="nom" name="nom" placeholder="Dupont" required autocomplete="family-name">
+          </div>
+        </div>
+        <div class="fg">
+          <label for="agence">Agence / Réseau</label>
+          <input type="text" id="agence" name="agence" placeholder="GNI, IAD, indépendant…" required autocomplete="organization">
+        </div>
+        <div class="fg">
+          <label for="tel">Téléphone</label>
+          <input type="tel" id="tel" name="tel" placeholder="06 00 00 00 00" required autocomplete="tel">
+        </div>
+        <div class="fg">
+          <label for="ville">Ville principale d'activité</label>
+          <input type="text" id="ville" name="ville" placeholder="Lyon, Paris, Bordeaux…" required autocomplete="address-level2">
+        </div>
+        <button type="submit" class="btn-primary form-btn">
+          Réserver ma démo gratuite →
+        </button>
+        <p class="form-note">Réponse sous 24&nbsp;h · Aucun démarchage · Sans engagement</p>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     CTA FINAL
+============================================================ -->
+<section id="cta-final" aria-labelledby="cta-h2">
+  <div class="container">
+    <div class="cta-body">
+      <h2 class="reveal" id="cta-h2">Prêt à reprendre du temps sur ce qui compte vraiment&nbsp;?</h2>
+      <p class="reveal reveal-d1">La relation client. Les mandats. La croissance de votre agence.<br>Pas la compilation de données DVF à 22&nbsp;h.</p>
+      <a href="#demo" class="btn-primary reveal reveal-d2">Réserver ma démo personnalisée</a>
+      <p class="cta-tagline reveal reveal-d3">Nous ne vendons pas un catalogue. Nous construisons avec vous.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     FOOTER
+============================================================ -->
+<footer role="contentinfo">
+  <div class="container">
+    <div class="footer-top">
+      <div>
+        <div class="footer-logo">EstimeI<span>A</span></div>
+        <p class="footer-sub">L'IA d'estimation immobilière qui apprend votre expertise terrain.</p>
+      </div>
+      <nav aria-label="Liens du pied de page">
+        <div class="footer-links">
+          <a href="#probleme">Le problème</a>
+          <a href="#fonctionnement">Comment ça marche</a>
+          <a href="#benefices">Bénéfices</a>
+          <a href="#faq">FAQ</a>
+          <a href="#demo">Réserver une démo</a>
+          <a href="mailto:contact@estimeia.fr">contact@estimeia.fr</a>
+        </div>
+      </nav>
+    </div>
+    <div class="footer-bottom">
+      <p class="footer-copy">© 2026 EstimeIA — Tous droits réservés</p>
+      <p class="footer-copy">Fait pour les agents qui veulent gagner du temps, pas en perdre.</p>
+    </div>
+  </div>
+</footer>
+
+<!-- ============================================================
+     JS
+============================================================ -->
+<script>
+  // Nav scroll shadow
+  const nav = document.querySelector('.nav');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 40);
+  }, { passive: true });
+
+  // Mobile nav toggle
+  const toggle = document.querySelector('.nav-toggle');
+  const menu   = document.getElementById('nav-menu');
+  const iconBurger = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>`;
+  const iconClose  = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`;
+
+  toggle.addEventListener('click', () => {
+    const open = menu.classList.toggle('open');
+    toggle.setAttribute('aria-expanded', String(open));
+    toggle.innerHTML = open ? iconClose : iconBurger;
+  });
+  menu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+    menu.classList.remove('open');
+    toggle.setAttribute('aria-expanded', 'false');
+    toggle.innerHTML = iconBurger;
+  }));
+
+  // Scroll reveal
+  const revealObs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('visible'); revealObs.unobserve(e.target); }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -48px 0px' });
+  document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
+
+  // Counter animation (easeOutCubic)
+  function runCounter(el, target, dur = 1100) {
+    let start = null;
+    const tick = (ts) => {
+      if (!start) start = ts;
+      const p = Math.min((ts - start) / dur, 1);
+      el.textContent = Math.round((1 - Math.pow(1 - p, 3)) * target);
+      if (p < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  }
+  const cntObs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        runCounter(e.target, +e.target.dataset.target);
+        cntObs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.6 });
+  document.querySelectorAll('.counter').forEach(el => cntObs.observe(el));
+
+  // Form → mailto
+  document.getElementById('demo-form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const d = new FormData(e.target);
+    const sub  = encodeURIComponent(`Demande de démo EstimeIA — ${d.get('prenom')} ${d.get('nom')} (${d.get('agence')})`);
+    const body = encodeURIComponent(
+      `Bonjour,\n\nJe souhaite réserver une démo EstimeIA.\n\nPrénom : ${d.get('prenom')}\nNom : ${d.get('nom')}\nAgence/Réseau : ${d.get('agence')}\nTéléphone : ${d.get('tel')}\nVille principale : ${d.get('ville')}\n\nMerci de me rappeler pour convenir d'un créneau.`
+    );
+    window.location.href = `mailto:contact@estimeia.fr?subject=${sub}&body=${body}`;
+  });
+</script>
+
+<!-- JSON-LD -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "EstimeIA",
+  "description": "IA d'estimation immobilière sur-mesure pour agents immobiliers. Automatise DVF, comparables, filtres d'anomalies et génère des dossiers PDF professionnels en 15 minutes.",
+  "applicationCategory": "BusinessApplication",
+  "operatingSystem": "Web",
+  "offers": {
+    "@type": "Offer",
+    "description": "Tarif sur-mesure selon volume — demander une démo gratuite",
+    "availability": "https://schema.org/InStock"
+  },
+  "creator": {
+    "@type": "Organization",
+    "name": "EstimeIA",
+    "email": "contact@estimeia.fr"
+  }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Est-ce que l'IA remplace totalement l'agent immobilier ?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Non. EstimeIA fait le travail de collecte, de filtrage et de mise en forme. L'agent garde le jugement final : validation de la fourchette, connaissance du quartier, relation client. C'est de l'expertise augmentée, pas remplacée." }
+    },
+    {
+      "@type": "Question",
+      "name": "Combien coûte EstimeIA ?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Le tarif est sur-mesure selon votre volume d'estimations. Coût transparent basé sur l'API + un abonnement léger. Demandez une démo pour un chiffrage adapté." }
+    },
+    {
+      "@type": "Question",
+      "name": "EstimeIA s'intègre-t-il avec Hector, Modelo ou mon CRM ?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Oui. EstimeIA s'interconnecte à Hector, Modelo et la plupart des CRM immobiliers sans changer vos habitudes de travail." }
+    },
+    {
+      "@type": "Question",
+      "name": "Les données clients sont-elles sécurisées ?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Oui. Déploiement possible on-premise ou cloud sécurisé. Conformité RGPD assurée. Vos données ne servent jamais à entraîner des modèles tiers." }
+    }
+  ]
+}
+</script>
+
+</body>
+</html>
